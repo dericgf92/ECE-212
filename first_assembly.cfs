@@ -1,0 +1,42 @@
+; Assignment 3: Question 3: Branching: 
+
+	*= $10000
+ 
+
+Start:
+	
+	;Move a Test Product Number (P.N.) into DataReg:D0 to analyze it
+	move.l #480, D0 ; P.N. is 480
+	BMI exit ; Negative P.N. is invalid --> exit program(raise error flag?)
+	BRA Check_1 ; Go check if belongs in group 1 (P.N. <= 250)
+
+Check_1	CMPI.l #251, D0 ; if less than 251, P.N. belongs to group 1
+	BMI Group_1; if result is NEG then Product belongs to group 1
+
+	BRA Check_2 ; Check if belongs to group 2 (250<P.N.<=400)
+
+;"Place" P.N. in Group 1
+Group_1 move.b #1, D1 
+	BRA exit ; Program Complete
+
+; If P.N. less than 401 it belongs to Group 2
+; We already know its greater than 250 at this point
+Check_2 CMPI.l #401, D0 
+	BMI Group_2 ; Place P.N. in Group 2 if compare result is negative
+	BRA Group_3 ; not Group 1 or Group 2 so must be Group 3
+
+; "Place" P.N. in Group 2
+Group_2 move.b #2, D1 
+	BRA exit ; Program Complete
+
+; "Place" P.N. in Group 3
+Group_3 move.b #3, D1
+	BRA exit ; Program Complete
+
+exit
+
+	; terminate program
+	clr.w -(sp)
+	trap #15
+
+	end Start
